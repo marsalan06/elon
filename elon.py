@@ -1,7 +1,8 @@
 import pyttsx3 
 import datetime
 import speech_recognition as sr
-
+import wikipedia
+import webbrowser
 engine=pyttsx3.init('sapi5')
 voices=engine.getProperty('voices')
 #print(voices[1]) #print voice id
@@ -13,7 +14,9 @@ def which_func(name):
     print(".....")
 
 def speak(audio):
+    global speak_value
     which_func(str("speak"))
+    speak_value=audio
     print(audio)
     engine.say(audio)
     engine.runAndWait()
@@ -39,6 +42,7 @@ def takeCommand():
     with sr.Microphone() as source:
         print("Listening.....")
         r.pause_threshold=1.5
+        r.energy_threshold=400
         audio=r.listen(source)
     try:
         print("Recognizing....")
@@ -54,6 +58,17 @@ def takeCommand():
 
 if __name__=="__main__":
     speak("Hi Arsalan")
-    wishme()
+    #wishme()
     while True:
-        takeCommand()
+        query=takeCommand().lower()
+
+        # logic execution 
+        if 'wikipedia' in query:
+            speak("searching wikipedia")
+            query=query.replace("wikipedia","")
+            results=wikipedia.summary(query,sentences=2)
+            speak("According to wikipedia")
+            speak(results)
+        elif "website" in query:
+            print(query.split())
+            #webbrowser.open() #have to get from regex
